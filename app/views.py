@@ -31,7 +31,26 @@ def category(request):
     active_category =  request.GET.get('category','')
     if active_category:
         products = Product.objects.filter(category__slug = active_category)
-    context = {'categories':categories,'products':products}
+    if request.method == "POST":
+        searched = request.POST["searched"]
+        keys = Product.objects.filter(name__contains = searched)
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = Order.objects.get_or_create(customer =customer,complete =False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+        user_not_login = "hidden"
+        user_login ="show"
+        
+    else:
+        items = []    
+        order = {'get_cart_items':0,'get_cart_total':0}
+        cartItems = order['get_cart_items']
+        user_not_login = "show"
+        user_login ="hidden"
+
+    context = {'categories':categories,'products':products,'cartItems':cartItems,'user_not_login': user_not_login,'user_login': user_login,}
+
     return render(request,'app/category.html',context)
 def search(request):
     if request.method == "POST":
