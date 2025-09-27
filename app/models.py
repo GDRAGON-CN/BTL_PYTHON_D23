@@ -17,7 +17,6 @@ class CreateUserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username','email','first_name','last_name','password1','password2']
-        
 
 class Product(models.Model):
     category = models.ManyToManyField(Category,related_name='product')
@@ -35,6 +34,15 @@ class Product(models.Model):
         except:
             url = ''
         return url
+# thêm
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="products/", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.product.name} - Image"
+
+#thêm
 class Order(models.Model):
     customer = models.ForeignKey(User,on_delete=models.SET_NULL,blank=True,null=True)
     date_order = models.DateField(auto_now_add=True)
